@@ -1,0 +1,1252 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mooboo — Tienda</title>
+  <!-- FontAwesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    /* ====== Reset ====== */
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; color:#333;background:#fafafa}
+    a{text-decoration:none;color:inherit}
+
+    /* ====== Layout ====== */
+    .container{max-width:1200px;margin:24px auto;padding:0 20px}
+
+    /* ====== Header ====== */
+    header{background:#fff;padding:18px 0;border-radius:8px;box-shadow:0 8px 24px rgba(10,20,30,0.04)}
+    .topbar{display:flex;align-items:center;gap:16px}
+    .logo{font-weight:800;letter-spacing:1px;color:#111}
+    .search{flex:1;display:flex;align-items:center;gap:8px}
+    .search input{flex:1;padding:10px 14px;border-radius:24px;border:1px solid #e6e6e6;background:#fafafa}
+    .icons{display:flex;gap:12px;align-items:center}
+    .icon-btn{background:#f7f7f7;padding:8px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;cursor:pointer}
+    .icon-btn:active{transform:scale(.98)}
+
+    nav{margin-top:12px;display:flex;gap:18px;align-items:center;font-weight:600;color:#666;overflow:auto;padding-bottom:6px}
+    nav a{white-space:nowrap}
+
+    /* ====== Hero ====== */
+    .hero{display:grid;grid-template-columns:2fr 1fr;gap:20px;margin:26px 0;align-items:stretch}
+    .hero-main{background:#f1f3f4;border-radius:8px;padding:28px;display:flex;align-items:center;gap:24px;position:relative;overflow:hidden}
+    .hero-main img{width:420px;max-width:48%;height:auto;border-radius:6px;object-fit:cover}
+    .hero-text{max-width:48%}
+    .label{font-size:14px;color:#777;margin-bottom:8px}
+    .title{font-size:44px;font-weight:800;letter-spacing:-1px;margin-bottom:10px}
+    .desc{color:#666;margin-bottom:14px}
+    .cta{display:inline-block;padding:10px 16px;border-radius:6px;border:1px solid #ddd;background:#fff;color:#111}
+
+    .hero-side{display:grid;grid-template-rows:1fr 1fr;gap:12px}
+    .card{background:#f8f0ee;padding:18px;border-radius:8px}
+    .card.small{display:flex;gap:12px;align-items:center}
+    .card.small img{width:70px;height:70px;object-fit:cover;border-radius:6px}
+
+    /* ====== Section Title ====== */
+    .section-title{text-align:center;margin:34px 0}
+    .section-title h2{font-size:26px}
+    .section-title p{color:#888;margin-top:8px}
+
+    /* ====== Product Grid ====== */
+    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+    .product{background:#fff;border-radius:8px;padding:18px;box-shadow:0 8px 18px rgba(10,20,30,0.03);display:flex;flex-direction:column}
+    .media{height:180px;display:flex;align-items:center;justify-content:center}
+    .media img{max-width:100%;max-height:100%;object-fit:contain}
+    .meta{margin-top:12px;display:flex;flex-direction:column;gap:6px}
+    .meta .name{font-weight:600}
+    .price{color:#27ae60;font-weight:700}
+    .old-price{color:#999;text-decoration:line-through;font-size:13px}
+    .badges{display:flex;gap:8px;align-items:center}
+    .badge{background:#eaf7f1;color:#1b7a57;padding:6px 8px;border-radius:4px;font-weight:700;font-size:12px}
+
+    .product .actions{margin-top:auto;display:flex;gap:8px}
+    .btn{padding:10px 12px;border-radius:8px;border:0;cursor:pointer;transition:all 0.2s}
+    .btn.primary{background:#111;color:#fff}
+    .btn.ghost{background:#fff;border:1px solid #eee}
+    .btn:hover{opacity:0.95;transform:translateY(-1px)}
+
+    /* ====== Cart Modal ====== */
+    .cart-btn{position:relative}
+    .cart-count{position:absolute;top:-6px;right:-6px;background:#e53935;color:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:12px}
+    .cart-modal{position:fixed;right:24px;top:84px;width:380px;background:#fff;border-radius:10px;padding:16px;box-shadow:0 20px 40px rgba(10,20,30,0.12);display:none;z-index:60;max-height:90vh;overflow:auto;transition:all 0.3s ease-in-out}
+    .cart-modal.open{display:block}
+    .cart-list{max-height:200px;overflow:auto;display:flex;flex-direction:column;gap:12px}
+    .cart-item{display:flex;gap:10px;align-items:center}
+    .cart-item img{width:56px;height:56px;object-fit:cover;border-radius:6px}
+    .cart-footer{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+
+    /* ====== Checkout Form ====== */
+    .checkout-form{margin-top:16px;display:none;flex-direction:column;gap:10px;transition:all 0.3s}
+    .checkout-form.show{display:flex}
+    .checkout-form input{padding:10px;border-radius:6px;border:1px solid #ccc}
+    .checkout-form button{margin-top:10px}
+
+    /* ====== Close button solo en mobile ====== */
+    .close-cart{
+      display:none;
+      position:absolute;
+      top:10px;
+      right:10px;
+      background:red;
+      color:white;
+      font-size:20px;
+      font-weight:bold;
+      border:none;
+      border-radius:50%;
+      width:32px;
+      height:32px;
+      line-height:32px;
+      text-align:center;
+      cursor:pointer;
+      z-index:1000;
+    }
+
+    /* ====== Footer ====== */
+    footer{margin-top:24px;padding:26px;background:#fafafa;border-radius:8px;text-align:center;color:#666;box-shadow:inset 0 1px 0 rgba(255,255,255,0.6)}
+
+    /* ====== Responsive ====== */
+    @media (max-width:1000px){
+      .grid{grid-template-columns:repeat(3,1fr)}
+      .hero{grid-template-columns:1fr;}
+      .hero-main img{display:none}
+      .hero-text{max-width:100%}
+    }
+    @media (max-width:700px){
+      header{padding:12px 0}
+      .grid{grid-template-columns:repeat(2,1fr)}
+      .search input{display:none}
+      nav{overflow:auto}
+      .container{padding:0 14px}
+      .hero{gap:12px}
+      .cart-modal{
+        position:fixed;
+        top:0;
+        right:0;
+        left:0;
+        width:100%;
+        border-radius:0 0 10px 10px;
+        box-shadow:0 8px 24px rgba(0,0,0,0.15);
+      }
+      .close-cart{display:block;}
+    }
+    @media (max-width:420px){
+      .grid{grid-template-columns:1fr}
+      .title{font-size:28px}
+      .hero-side{display:none}
+    }
+
+    /* ===========================
+       ADMIN DASHBOARD MEJORADO
+       =========================== */
+
+    .overlay-modal {
+      position:fixed;
+      inset:0;
+      background:linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.55));
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:120;
+      padding:20px;
+    }
+    .overlay-modal.open { display:flex; }
+
+    .admin-panel {
+      width:100%;
+      max-width:1280px;
+      max-height:96vh;
+      overflow:auto;
+      background:linear-gradient(180deg,#f8fafc 0%, #f1f5f9 100%);
+      border-radius:22px;
+      padding:40px 36px 32px 36px;
+      box-shadow:0 30px 60px rgba(10,20,30,0.28);
+      position:relative;
+      border:1px solid rgba(15,20,30,0.07);
+      animation: fadeInAdmin 0.5s;
+    }
+    @keyframes fadeInAdmin {
+      from { opacity:0; transform:scale(0.97);}
+      to { opacity:1; transform:scale(1);}
+    }
+
+    .admin-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:18px;
+      margin-bottom:28px;
+      padding-bottom:14px;
+      border-bottom:2px solid #e2e8f0;
+      background:linear-gradient(90deg,#f1f5f9 60%,#fff 100%);
+      border-radius:16px 16px 0 0;
+      box-shadow:0 2px 8px rgba(10,20,30,0.04);
+    }
+    .admin-header h2 {
+      font-size:28px;
+      margin:0;
+      display:flex;
+      align-items:center;
+      gap:14px;
+      color:#0f172a;
+      letter-spacing:0.5px;
+      font-weight:800;
+      text-shadow:0 1px 0 #fff;
+    }
+    .admin-header h2 i { color:#3b82f6; font-size:26px; }
+
+    /* KPIs arriba horizontal */
+    .admin-kpis {
+      display:flex;
+      gap:32px;
+      margin-bottom:30px;
+      flex-wrap:wrap;
+      justify-content:flex-start;
+      align-items:stretch;
+    }
+    .admin-kpi {
+      background:linear-gradient(90deg,#f1f5f9 70%,#fff 100%);
+      padding:24px 22px;
+      border-radius:16px;
+      box-shadow:0 6px 18px rgba(10,20,30,0.07);
+      min-width:180px;
+      text-align:center;
+      border-left:7px solid transparent;
+      transition:box-shadow 0.2s, border-left-color 0.2s;
+      font-size:17px;
+      font-weight:600;
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+    }
+    .admin-kpi strong {
+      display:block;
+      font-size:28px;
+      margin-top:10px;
+      color:#0f172a;
+      font-weight:900;
+      letter-spacing:0.5px;
+      text-shadow:0 1px 0 #fff;
+    }
+    .admin-kpi.orders { border-left-color:#3b82f6 }
+    .admin-kpi.revenue { border-left-color:#10b981 }
+    .admin-kpi.items { border-left-color:#f59e0b }
+    .admin-kpi.last { border-left-color:#ef4444 }
+    .admin-kpi i {
+      font-size:28px;
+      margin-bottom:6px;
+      color:#64748b;
+      background:#e0e7ef;
+      border-radius:50%;
+      padding:10px;
+      margin-right:0;
+      box-shadow:0 2px 8px rgba(10,20,30,0.04);
+    }
+
+    .admin-grid {
+      display:grid;
+      grid-template-columns:340px 1fr;
+      gap:38px;
+      align-items:start;
+      margin-top:0;
+    }
+    .admin-card {
+      background:linear-gradient(180deg,#f9fafb,#f1f5f9 80%);
+      padding:28px 22px;
+      border-radius:18px;
+      box-shadow:0 8px 32px rgba(10,20,30,0.09);
+      border:1px solid #e2e8f0;
+      margin-bottom:18px;
+      transition:box-shadow 0.2s;
+    }
+    .admin-card:hover {
+      box-shadow:0 12px 36px rgba(10,20,30,0.13);
+    }
+    .admin-card h3 {
+      margin:0 0 16px 0;
+      font-size:20px;
+      color:#1e293b;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      font-weight:700;
+      letter-spacing:0.2px;
+    }
+    .admin-card h3 i { color:#10b981; font-size:20px; }
+    .admin-card p.small { margin:10px 0; color:#64748b; font-size:15px }
+
+    /* Tabla de órdenes con miniaturas pequeñas */
+    .orders-table {
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      margin-top:14px;
+      background:transparent;
+      font-size:16px;
+      border-radius:12px;
+      overflow:hidden;
+      box-shadow:0 2px 12px rgba(10,20,30,0.04);
+    }
+    .orders-table th, .orders-table td {
+      border:1px solid #e2e8f0;
+      padding:12px 8px;
+      vertical-align:top;
+      text-align:left;
+      background:#fff;
+    }
+    .orders-table thead th {
+      background: linear-gradient(90deg,#f1f5f9,#fff);
+      font-weight:800;
+      color:#334155;
+      font-size:16px;
+      border-bottom:2px solid #e2e8f0;
+    }
+    .orders-thumbnails {
+      width:32px;
+      height:32px;
+      object-fit:cover;
+      margin-right:6px;
+      border-radius:6px;
+      border:1px solid #e2e8f0;
+      box-shadow:0 1px 4px rgba(10,20,30,0.04);
+      display:inline-block;
+      vertical-align:middle;
+    }
+    .orders-products-list {
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      align-items:center;
+    }
+    .orders-product-item {
+      display:flex;
+      align-items:center;
+      gap:4px;
+      background:#f3f4f6;
+      border-radius:6px;
+      padding:2px 6px 2px 2px;
+      margin-bottom:2px;
+      font-size:13px;
+    }
+
+    .admin-controls {
+      display:flex;
+      gap:14px;
+      margin-top:18px;
+      justify-content:flex-end;
+    }
+    .small-btn {
+      padding:12px 18px;
+      border-radius:10px;
+      border:0;
+      cursor:pointer;
+      box-shadow:0 4px 10px rgba(15,20,30,0.04);
+      font-size:16px;
+      font-weight:600;
+      transition:background 0.2s, color 0.2s;
+      display:flex;
+      align-items:center;
+      gap:9px;
+    }
+    .small-btn.primary {
+      background:#0f172a;
+      color:#fff;
+      border:1px solid #0f172a;
+    }
+    .small-btn.ghost {
+      background:#fff;
+      border:1px solid #e2e8f0;
+      color:#0f172a;
+    }
+    .small-btn:hover {
+      background:#e0e7ef;
+      color:#111;
+    }
+
+    /* Login */
+    .admin-login {
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin-top:8px;
+    }
+    .admin-login input {
+      padding:14px;
+      border:1px solid #e2e8f0;
+      border-radius:10px;
+      background:#fff;
+      font-size:16px;
+      margin-bottom:2px;
+      transition:border-color 0.2s;
+    }
+    .admin-login input:focus {
+      border-color:#3b82f6;
+      outline:none;
+      background:#f1f5f9;
+    }
+    .admin-login label {
+      font-weight:700;
+      font-size:16px;
+      color:#334155;
+      margin-bottom:2px;
+    }
+    .admin-login .hint {
+      font-size:14px;
+      color:#64748b;
+    }
+
+    /* Admin top-close on mobile */
+    .admin-close {
+      position:absolute;
+      top:22px;
+      right:22px;
+      background:#e53935;
+      border-radius:50%;
+      color:#fff;
+      width:44px;
+      height:44px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      border:0;
+      box-shadow: 0 6px 18px rgba(229,57,53,0.12);
+      font-size:26px;
+      transition:background 0.2s;
+    }
+    .admin-close:hover {
+      background:#b91c1c;
+    }
+
+    /* hide protected sections until login */
+    .admin-protected { display:none; }
+    .admin-protected.show { display:block; }
+
+    /* make admin modal responsive */
+    @media (max-width:1200px){
+      .admin-panel { max-width:99vw; padding:18px; }
+      .admin-grid { grid-template-columns:1fr; gap:18px;}
+      .admin-header { font-size:18px; }
+      .admin-kpis { gap:18px; }
+    }
+    @media (max-width:700px){
+      .admin-panel { padding:8px; }
+      .admin-header { flex-direction:column; align-items:flex-start; gap:6px;}
+      .admin-grid { gap:10px;}
+      .admin-card { padding:12px 6px;}
+      .admin-kpi { min-width:120px; font-size:13px;}
+      .orders-table th, .orders-table td { font-size:13px; padding:6px 4px;}
+      .admin-kpis { flex-direction:column; gap:10px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="topbar">
+        <div class="logo">LEVELUP STORE</div>
+        <div class="search">
+          <input type="text" placeholder="Buscar en toda la tienda..." id="searchInput">
+          <div class="icons">
+            <button class="icon-btn" id="mobileMenuBtn" title="Menú"><i class="fa fa-bars"></i></button>
+            <button class="icon-btn" id="langBtn" title="Idioma / Región"><i class="fa fa-globe"></i></button>
+            <div class="icon-btn" id="adminBtn" title="Panel"><i class="fa fa-user"></i></div>
+            <div class="icon-btn cart-btn" id="cartBtn" aria-label="Carrito">
+              <i class="fa fa-shopping-cart"></i>
+              <div class="cart-count" id="cartCount">0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <nav>
+        <a href="ecomerce.html">Hoodies</a>
+        <a href="wireless.html">Audífonos</a>
+        <a href="calzado.html">Calzado</a>
+        <a href="anime.html">Anime Hoddie</a>
+        <a href="#">WhatsApp</a>
+      </nav>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-main">
+        <div class="hero-text">
+          <div class="label">Novedades</div>
+          <div class="title">ZIP HOODIE</div>
+          <div class="desc">Diseños exclusivos, cómodos y con estilo para todos los días.</div>
+          <a class="cta" href="#">Descúbrelo ahora</a>
+        </div>
+        <img src="image-path/hero.png" alt="Imagen principal">
+      </div>
+      <aside class="hero-side">
+        <div class="card" style="background:#efe6e0">
+          <h4>Tenis de verano</h4>
+          <p>Gran descuento esta semana</p>
+          <img src="image-path/side1.png" alt="sneaker" style="width:100%;height:100px;object-fit:contain;margin-top:8px;border-radius:6px">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="card small" style="background:#f0f6f2">
+            <img src="image-path/side2.png" alt="audífonos">
+            <div>
+              <div>Audífonos</div>
+              <div style="color:#888;font-size:13px">20% OFF</div>
+            </div>
+          </div>
+          <div class="card small" style="background:#f4efe6">
+            <img src="image-path/side3.png" alt="bolso">
+            <div>
+              <div>Limitado</div>
+              <div style="color:#888;font-size:13px">Gran Venta</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section title -->
+    <div class="section-title">
+      <h2>Novedades</h2>
+      <p>Explora nuestros productos más recientes y aprovecha las ofertas exclusivas.</p>
+    </div>
+
+    <!-- Products grid -->
+    <div class="grid" id="productsGrid"></div>
+
+    <!-- Cart Modal (existing) -->
+    <div class="cart-modal" id="cartModal" aria-hidden="true">
+      <button class="close-cart" id="closeCartBtn">&times;</button>
+      <h3>Tus productos</h3>
+      <div class="cart-list" id="cartList"></div>
+      <div class="cart-footer">
+        <div>
+          <small>Total parcial</small>
+          <div id="cartSubtotal">$0</div>
+        </div>
+        <div>
+          <button class="btn ghost" id="clearCartBtn">Vaciar carrito</button>
+          <button class="btn primary" id="checkoutBtn">Finalizar compra</button>
+        </div>
+      </div>
+      <!-- Checkout Form -->
+      <form class="checkout-form" id="checkoutForm">
+        <input type="text" id="nombre" placeholder="Nombre completo" required>
+        <input type="text" id="telefono" placeholder="Teléfono" required>
+        <input type="text" id="departamento" placeholder="Departamento" required>
+        <input type="text" id="ciudad" placeholder="Ciudad" required>
+        <input type="text" id="direccion" placeholder="Dirección" required>
+        <button type="submit" class="btn primary">Confirmar por WhatsApp</button>
+      </form>
+    </div>
+
+    <!-- Admin Modal overlay (new) -->
+    <div class="overlay-modal" id="adminModal" aria-hidden="true">
+      <div class="admin-panel" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
+        <button class="admin-close" id="adminCloseBtn" title="Cerrar"><i class="fa fa-times"></i></button>
+        <div class="admin-header">
+          <h2 id="adminTitle"><i class="fa fa-tachometer-alt"></i> Panel Administrativo</h2>
+          <div id="adminStatus" style="font-size:14px;color:#64748b"></div>
+        </div>
+
+        <div class="admin-grid">
+          <!-- Left: login or KPIs -->
+          <div>
+            <div class="admin-card" id="adminLoginCard">
+              <h3><i class="fa fa-lock"></i> Acceso</h3>
+              <div class="admin-login">
+                <label for="adminUser">Usuario</label>
+                <input id="adminUser" placeholder="Usuario (ej. elkin56)" autocomplete="username">
+                <label for="adminPass">Contraseña</label>
+                <input id="adminPass" type="password" placeholder="Contraseña" autocomplete="current-password">
+                <div style="display:flex;gap:8px;margin-top:8px">
+                  <button class="small-btn primary" id="adminLoginBtn">Entrar</button>
+                  <button class="small-btn ghost" id="adminDemoBtn" title="Demo">Demo</button>
+                </div>
+                <p id="adminError" style="color:#d9534f;display:none;margin-top:8px">Credenciales incorrectas</p>
+                <p class="small" style="margin-top:8px;color:#64748b">Panel local. Para mayor seguridad implementa autenticación en servidor.</p>
+              </div>
+            </div>
+
+            <div class="admin-card admin-protected" id="adminKPIsCard" style="margin-top:12px">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <h3><i class="fa fa-chart-line"></i> KPIs</h3>
+                <div>
+                  <button class="small-btn ghost" id="adminLogoutBtn" title="Cerrar sesión"><i class="fa fa-sign-out-alt"></i> Cerrar sesión</button>
+                </div>
+              </div>
+              <div class="admin-kpis" id="kpisWrap">
+                <div class="admin-kpi orders"><i class="fa fa-shopping-bag"></i><div>Órdenes<br><strong id="kpiOrders">0</strong></div></div>
+                <div class="admin-kpi revenue"><i class="fa fa-wallet"></i><div>Ingresos<br><strong id="kpiRevenue">COP $0</strong></div></div>
+                <div class="admin-kpi items"><i class="fa fa-boxes"></i><div>Productos vendidos<br><strong id="kpiItems">0</strong></div></div>
+                <div class="admin-kpi last"><i class="fa fa-clock"></i><div>Última orden<br><strong id="kpiLast">-</strong></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: orders list -->
+          <div>
+            <div class="admin-card admin-protected" id="ordersCard">
+              <h3><i class="fa fa-receipt"></i> Órdenes recibidas</h3>
+              <div style="overflow:auto;max-height:360px">
+                <table class="orders-table" id="ordersTable">
+                  <thead>
+                    <tr>
+                      <th style="width:36px">#</th>
+                      <th>Cliente</th>
+                      <th>Teléfono</th>
+                      <th>Dirección</th>
+                      <th>Productos</th>
+                      <th>Total</th>
+                      <th style="min-width:140px">Fecha</th>
+                    </tr>
+                  </thead>
+                  <tbody id="ordersTbody"></tbody>
+                </table>
+              </div>
+              <div class="admin-controls">
+                <button class="small-btn ghost" id="adminRefreshBtn"><i class="fa fa-sync"></i> Refrescar</button>
+                <button class="small-btn ghost" id="adminExportBtn"><i class="fa fa-file-export"></i> Exportar JSON</button>
+                <button class="small-btn ghost" id="adminClearOrdersBtn"><i class="fa fa-trash-alt"></i> Borrar órdenes</button>
+              </div>
+            </div>
+          </div>
+        </div> <!-- admin-grid -->
+
+      </div>
+    </div>
+
+    <footer>
+      © 2025 LevelUp Store  — Diseñado para reflejar el Cambio.
+    </footer>
+  </div>
+
+  <script>
+/* =====================
+   Datos de productos (mantener nombres tipo Hoodie)
+   ===================== */
+const PRODUCTS = [
+  {id:1,name:'Urban Hoodie',price:94000,oldPrice:115000,img:'image-path/product1.png',badge:'Nuevo'},
+  {id:2,name:'Classic Hoodie',price:95000,oldPrice:130000,img:'image-path/product2.png',badge:'Nuevo'},
+  {id:3,name:'Royal Hoodie',price:100000,oldPrice:125000,img:'image-path/product3.png',badge:'Nuevo'},
+  {id:4,name:'Street Hoodie',price:150000,oldPrice:250000,img:'image-path/product4.png',badge:'Nuevo'},
+  {id:5,name:'Fresh Hoodie',price:165000,oldPrice:190000,img:'image-path/product5.png',badge:'Nuevo'},
+  {id:6,name:'Sky Hoodie',price:110000,oldPrice:130000,img:'image-path/product6.png',badge:'Nuevo'},
+  {id:7,name:'Dream Hoodie',price:140000,oldPrice:180000,img:'image-path/product7.png',badge:'-7%'},
+  {id:8,name:'Galaxy Hoodie',price:97000,oldPrice:100000,img:'image-path/product8.png',badge:'-20%'},
+  {id:9,name:'Cozy Hoodie',price:95000,oldPrice:110000,img:'image-path/product9.png',badge:'-7%'},
+  {id:10,name:'Luxe Hoodie',price:95000,oldPrice:null,img:'image-path/product10.png',badge:'Nuevo'},
+  {id:11,name:'Llavero Inteligente',price:25000,oldPrice:35000,img:'image-path/product11.png',badge:'Nuevo'},
+  {id:12,name:'Barca premium Hoddie',price:140000,oldPrice:197000,img:'image-path/product12.png',badge:'Nuevo'},
+  {id:13,name:'Spotify Barca Hoddie',price:139000,oldPrice:180000,img:'image-path/product13.png',badge:'Nuevo'},
+  {id:14,name:'Porche Hoddie',price:122000,oldPrice:130000,img:'image-path/product14.png',badge:'Nuevo'}
+];
+
+/* =====================
+   Elementos DOM
+   ===================== */
+const grid = document.getElementById('productsGrid');
+const cartBtn = document.getElementById('cartBtn');
+const cartCount = document.getElementById('cartCount');
+const cartModal = document.getElementById('cartModal');
+const cartList = document.getElementById('cartList');
+const cartSubtotal = document.getElementById('cartSubtotal');
+const checkoutBtn = document.getElementById('checkoutBtn');
+const checkoutForm = document.getElementById('checkoutForm');
+const closeCartBtn = document.getElementById('closeCartBtn');
+const clearCartBtn = document.getElementById('clearCartBtn');
+const searchInput = document.getElementById('searchInput');
+
+// Admin
+const adminBtn = document.getElementById('adminBtn');
+const adminModal = document.getElementById('adminModal');
+const adminCloseBtn = document.getElementById('adminCloseBtn');
+const adminLoginBtn = document.getElementById('adminLoginBtn');
+const adminDemoBtn = document.getElementById('adminDemoBtn');
+const adminError = document.getElementById('adminError');
+const adminLoginCard = document.getElementById('adminLoginCard');
+const adminKPIsCard = document.getElementById('adminKPIsCard');
+const ordersTbody = document.getElementById('ordersTbody');
+const kpiOrders = document.getElementById('kpiOrders');
+const kpiRevenue = document.getElementById('kpiRevenue');
+const kpiItems = document.getElementById('kpiItems');
+const kpiLast = document.getElementById('kpiLast');
+const adminRefreshBtn = document.getElementById('adminRefreshBtn');
+const adminExportBtn = document.getElementById('adminExportBtn');
+const adminClearOrdersBtn = document.getElementById('adminClearOrdersBtn');
+const adminLogoutBtn = document.getElementById('adminLogoutBtn');
+const ordersCard = document.getElementById('ordersCard');
+
+/* =====================
+   Utilidades
+   ===================== */
+function formatPrice(v){ return 'COP $' + Number(v).toLocaleString('es-CO'); }
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+/* =====================
+   RENDERING PRODUCTOS (desde JS como pediste)
+   ===================== */
+function renderProducts(list){
+  grid.innerHTML = '';
+  list.forEach(p=>{
+    const el = document.createElement('article');
+    el.className = 'product';
+    el.innerHTML = `
+      <div class="media"><img src="${p.img}" alt="${p.name}"></div>
+      <div class="meta">
+        <div class="badges"><span class="badge">${p.badge || ''}</span></div>
+        <div class="name">${p.name}</div>
+        <div>
+          <span class="price">${formatPrice(p.price)}</span>
+          ${p.oldPrice ? `<span class="old-price"> ${formatPrice(p.oldPrice)}</span>` : ''}
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn ghost" data-id="${p.id}"><i class="fa fa-heart"></i></button>
+        <button class="btn primary" data-add="${p.id}"><i class="fa fa-cart-plus"></i> Agregar</button>
+      </div>
+    `;
+    grid.appendChild(el);
+  });
+}
+renderProducts(PRODUCTS);
+
+/* =====================
+   CARRITO (persistente)
+   ===================== */
+let cart = JSON.parse(localStorage.getItem('cart_v1')||'[]');
+
+function saveCart(){ localStorage.setItem('cart_v1', JSON.stringify(cart)); updateCartUI(); }
+
+function addToCart(id){
+  const product = PRODUCTS.find(p=>p.id===Number(id));
+  if(!product) return;
+  const item = cart.find(c=>c.id===product.id);
+  if(item) item.qty += 1; else cart.push({id:product.id,name:product.name,price:product.price,img:product.img,qty:1});
+  saveCart();
+}
+
+function removeFromCart(id){ cart = cart.filter(i=>i.id!==Number(id)); saveCart(); }
+function changeQty(id,delta){ const it = cart.find(i=>i.id===Number(id)); if(!it) return; it.qty += delta; if(it.qty<1) removeFromCart(id); saveCart(); }
+
+function updateCartUI(){
+  cartCount.textContent = cart.reduce((s,i)=>s+i.qty,0);
+  cartList.innerHTML = '';
+  cart.forEach(i=>{
+    const div = document.createElement('div'); div.className='cart-item';
+    div.innerHTML = `
+      <img src="${i.img}" alt="${i.name}">
+      <div style="flex:1">
+        <div style="font-weight:700">${i.name}</div>
+        <div style="color:#666">${formatPrice(i.price)} x ${i.qty}</div>
+        <div style="margin-top:6px;display:flex;gap:8px">
+          <button class="btn ghost" data-dec="${i.id}">-</button>
+          <button class="btn ghost" data-inc="${i.id}">+</button>
+          <button class="btn ghost" data-rm="${i.id}"><i class="fa fa-trash"></i></button>
+        </div>
+      </div>
+    `;
+    cartList.appendChild(div);
+  });
+  const subtotal = cart.reduce((s,i)=>s + i.price * i.qty,0);
+  cartSubtotal.textContent = formatPrice(subtotal);
+}
+
+/* =====================
+   Eventos del carrito (delegación)
+   ===================== */
+document.body.addEventListener('click', e=>{
+  const addBtn = e.target.closest('[data-add]');
+  if(addBtn){ e.stopPropagation(); addToCart(addBtn.getAttribute('data-add'));
+    cartModal.classList.add('open'); cartModal.setAttribute('aria-hidden','false'); saveCart(); return;
+  }
+
+  const dec = e.target.closest('[data-dec]');
+  if(dec){ e.stopPropagation(); changeQty(dec.getAttribute('data-dec'), -1); return; }
+
+  const inc = e.target.closest('[data-inc]');
+  if(inc){ e.stopPropagation(); changeQty(inc.getAttribute('data-inc'), +1); return; }
+
+  const rm = e.target.closest('[data-rm]');
+  if(rm){ e.stopPropagation(); removeFromCart(rm.getAttribute('data-rm')); return; }
+});
+
+cartBtn.addEventListener('click', (e)=>{
+  e.stopPropagation();
+  cartModal.classList.toggle('open');
+  cartModal.setAttribute('aria-hidden', !cartModal.classList.contains('open'));
+});
+
+closeCartBtn.addEventListener('click',(e)=>{
+  e.stopPropagation();
+  cartModal.classList.remove('open');
+  cartModal.setAttribute('aria-hidden',true);
+});
+
+clearCartBtn.addEventListener('click', (e)=>{
+  e.stopPropagation();
+  if(confirm('¿Vaciar carrito?')){cart=[];saveCart();}
+});
+
+// Abrir formulario checkout
+checkoutBtn.addEventListener('click', (e)=>{
+  e.stopPropagation();
+  if(cart.length===0){alert('Tu carrito está vacío'); return;}
+  checkoutForm.classList.toggle('show');
+});
+
+/* =====================
+   CONFIG: URL de tu Apps Script (pega la tuya si cambia)
+   ===================== */
+const GAS_URL = "https://script.google.com/macros/s/AKfycbz_perddNzSKsMWiaaFe5KKYLS0G79KXIJBuEB68P18Eq9LQF82FNmid1YqFr3fRX0LrA/exec";
+
+/* =====================
+   Helper cliente: parse productos si vienen como string (fallback)
+   ===================== */
+function parseProductosClient(productCell){
+  if(!productCell) return [];
+  if(Array.isArray(productCell)) return productCell;
+  if(typeof productCell === 'string'){
+    return productCell.split('\n').map(line=>{
+      const parts = line.split('| Img:');
+      const info = (parts[0]||'').trim();
+      const img = parts[1] ? parts[1].trim() : '';
+      // extraer qty y subtotal si existen
+      let qty = 0;
+      let subtotal = null;
+      const qtyMatch = info.match(/x\s*(\d+)/i);
+      if(qtyMatch) qty = Number(qtyMatch[1]);
+      const subtotalMatch = info.match(/\$\s*([\d.,]+)/);
+      if(subtotalMatch) subtotal = Number(subtotalMatch[1].replace(/[.,]/g,''));
+      // nombre hasta " xN" si existe
+      let name = info;
+      const nameMatch = info.match(/^(.+?)\s*x\s*\d+/i);
+      if(nameMatch) name = nameMatch[1].trim();
+      return {
+        texto: info,
+        img: img,
+        name: name,
+        qty: qty || 0,
+        subtotal: subtotal || 0
+      };
+    });
+  }
+  // si viene otro formato, retornar array vacío
+  return [];
+}
+
+/* =====================
+   CHECKOUT: guardar orden y redirigir a WhatsApp
+   - Guarda en localStorage 'orders_v1' con miniaturas
+   - Envía a Google Sheets (Apps Script)
+   ===================== */
+checkoutForm.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const nombre = document.getElementById('nombre').value.trim();
+  const telefono = document.getElementById('telefono').value.trim();
+  const departamento = document.getElementById('departamento').value.trim();
+  const ciudad = document.getElementById('ciudad').value.trim();
+  const direccion = document.getElementById('direccion').value.trim();
+
+  if(!nombre || !telefono || !direccion){ alert('Completa los datos requeridos'); return; }
+
+  const items = cart.map(i=>`• ${i.name} x${i.qty} - ${formatPrice(i.price*i.qty)}`).join('%0A');
+  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
+
+  // Guardar orden localmente
+  const orders = JSON.parse(localStorage.getItem('orders_v1') || '[]');
+
+  // Convertir productos a texto legible (para la celda)
+  const productosTexto = cart.map(i =>
+      `${i.name} x${i.qty} - $${i.price * i.qty} | Img: ${i.img}`
+    ).join('\n');
+
+  const order = {
+    id: Date.now(),
+    cliente: nombre || 'Cliente',
+    telefono: telefono || '',
+    departamento: departamento || '',
+    ciudad: ciudad || '',
+    direccion: direccion || '',
+    productos: productosTexto, // guardamos legible (Apps Script parseará)
+    total,
+    fecha: new Date().toLocaleString()
+  };
+
+  // Insertar local
+  orders.unshift(order);
+  localStorage.setItem('orders_v1', JSON.stringify(orders));
+
+  // También enviar a Google Sheets vía Apps Script (POST)
+  try {
+    await fetch(GAS_URL, {
+      method: "POST",
+      mode: "no-cors", // si no funciona con CORS, mantén no-cors (tu Apps Script debe permitir POST)
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(order)
+    });
+    console.log("Orden enviada a Google Sheets");
+  } catch(err){
+    console.error("Error al enviar a Google Sheets:", err);
+    // no hacemos fail crítico, porque aún tenemos la orden en localStorage
+  }
+
+  // Preparar mensaje para WhatsApp
+  const mensaje = `👋 *Hola!* Me gustaría realizar la siguiente compra:%0A%0A` +
+    `🛒 *Productos:*%0A${items}%0A%0A` +
+    `💰 *Total:* ${formatPrice(total)}%0A%0A` +
+    `📦 *Datos de envío*:%0A` +
+    `👤 Nombre: ${nombre}%0A` +
+    `📞 Teléfono: ${telefono}%0A` +
+    `🏢 Departamento: ${departamento}%0A` +
+    `🏙️ Ciudad: ${ciudad}%0A` +
+    `🏠 Dirección: ${direccion}`;
+
+  // Abrir WhatsApp en nueva pestaña
+  window.open(`https://wa.me/573246394689?text=${mensaje}`,'_blank');
+
+  // limpiar carrito y actualizar UI
+  cart = []; saveCart();
+  checkoutForm.classList.remove('show');
+  cartModal.classList.remove('open');
+  alert('Orden guardada y enviando a WhatsApp. La orden está disponible en el panel administrativo.');
+});
+
+/* =====================
+   Búsqueda (mantiene renderProducts)
+   ===================== */
+searchInput.addEventListener('input', e=>{
+  const q = e.target.value.trim().toLowerCase();
+  if(!q) renderProducts(PRODUCTS);
+  else renderProducts(PRODUCTS.filter(p=>p.name.toLowerCase().includes(q)));
+});
+
+document.getElementById('mobileMenuBtn').addEventListener('click', ()=>{ document.querySelector('nav').classList.toggle('open'); });
+
+/* =====================
+   Cerrar modales al hacer click fuera
+   ===================== */
+document.addEventListener('click', e=>{
+  // cerrar carrito si clic fuera
+  if(cartModal.classList.contains('open') && !cartModal.contains(e.target) && !cartBtn.contains(e.target)){
+    cartModal.classList.remove('open');
+  }
+  // cerrar admin modal si clic fuera
+  if(adminModal.classList.contains('open') && !adminModal.querySelector('.admin-panel').contains(e.target) && !adminBtn.contains(e.target)){
+    adminModal.classList.remove('open');
+  }
+});
+
+// cargar imagen fallback para todas las imágenes (mantener)
+document.addEventListener('DOMContentLoaded', ()=>{ document.querySelectorAll('img').forEach(img=>{ img.onerror = ()=>{ img.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="100%" height="100%" fill="%23eee"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23999" font-family="Arial" font-size="18">Imagen faltante</text></svg>'; }}); });
+
+// Inicializar UI del carrito
+updateCartUI();
+
+/* =====================
+   ADMIN (login, vistas, tablas)
+   - Seguridad ligera client-side: hash SHA-256 de "usuario:pass"
+   - Si autenticado se exponen .admin-protected
+   ===================== */
+
+// precomputed SHA-256 of "elkin56:password123"
+// computed server-side / offline: 59977bbeaffb291b0d8710b8543fdd602ac5d495559cb43882f14ff19ec3f2a9
+const STORED_HASH = '59977bbeaffb291b0d8710b8543fdd602ac5d495559cb43882f14ff19ec3f2a9';
+
+async function sha256Hex(message) {
+  const enc = new TextEncoder();
+  const data = enc.encode(message);
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  const bytes = new Uint8Array(hash);
+  const hex = Array.from(bytes).map(b => b.toString(16).padStart(2,'0')).join('');
+  return hex;
+}
+
+// check sessionStorage for active admin session
+function isAdminAuthenticated(){
+  try {
+    return sessionStorage.getItem('admin_auth') === '1';
+  } catch(e){ return false; }
+}
+
+function setAdminAuthenticated(user){
+  try { sessionStorage.setItem('admin_auth','1'); sessionStorage.setItem('admin_user', user); }
+  catch(e){}
+  // show protected UI
+  document.querySelectorAll('.admin-protected').forEach(el => el.classList.add('show'));
+  adminLoginCard.style.display = 'none';
+  adminKPIsCard.style.display = 'block';
+  ordersCard.classList.add('show');
+  populateOrdersTable();
+  refreshKPIs();
+  document.getElementById('adminStatus').textContent = 'Conectado: ' + (user || 'admin');
+}
+
+function clearAdminSession(){
+  try { sessionStorage.removeItem('admin_auth'); sessionStorage.removeItem('admin_user'); } catch(e){}
+  document.querySelectorAll('.admin-protected').forEach(el => el.classList.remove('show'));
+  adminLoginCard.style.display = 'block';
+  adminKPIsCard.style.display = 'none';
+  ordersCard.classList.remove('show');
+  document.getElementById('adminStatus').textContent = '';
+}
+
+// Open admin modal
+adminBtn.addEventListener('click', ()=>{
+  adminModal.classList.add('open');
+  adminModal.setAttribute('aria-hidden','false');
+
+  // If already authenticated, show KPIs
+  if(isAdminAuthenticated()){
+    adminLoginCard.style.display = 'none';
+    adminKPIsCard.style.display = 'block';
+    document.querySelectorAll('.admin-protected').forEach(el => el.classList.add('show'));
+    populateOrdersTable();
+    refreshKPIs();
+    const user = sessionStorage.getItem('admin_user') || 'admin';
+    document.getElementById('adminStatus').textContent = 'Conectado: ' + user;
+  } else {
+    // show login
+    adminLoginCard.style.display = 'block';
+    adminKPIsCard.style.display = 'none';
+    document.querySelectorAll('.admin-protected').forEach(el => el.classList.remove('show'));
+    ordersTbody.innerHTML = '';
+  }
+});
+
+adminCloseBtn.addEventListener('click', ()=>{
+  adminModal.classList.remove('open');
+  adminModal.setAttribute('aria-hidden','true');
+});
+
+// Demo quick fill
+adminDemoBtn.addEventListener('click', ()=>{
+  document.getElementById('adminUser').value = 'elkin56';
+  document.getElementById('adminPass').value = 'password123';
+});
+
+// Login flow
+adminLoginBtn.addEventListener('click', async ()=>{
+  const user = document.getElementById('adminUser').value.trim();
+  const pass = document.getElementById('adminPass').value.trim();
+  if(!user || !pass){ adminError.style.display = 'block'; adminError.textContent='Rellena usuario y contraseña'; return; }
+  adminError.style.display = 'none';
+  try {
+    const inputHash = await sha256Hex(`${user}:${pass}`);
+    if(inputHash === STORED_HASH){
+      // success
+      adminError.style.display = 'none';
+      setAdminAuthenticated(user);
+    } else {
+      adminError.style.display = 'block';
+      adminError.textContent = 'Credenciales incorrectas';
+      adminLoginBtn.disabled = true;
+      setTimeout(()=> adminLoginBtn.disabled = false, 1200);
+    }
+  } catch(err){
+    adminError.style.display = 'block';
+    adminError.textContent = 'Error de autenticación';
+  }
+});
+
+adminLogoutBtn && adminLogoutBtn.addEventListener('click', ()=>{
+  if(!confirm('Cerrar sesión administrativa?')) return;
+  clearAdminSession();
+  adminModal.classList.remove('open');
+  adminModal.setAttribute('aria-hidden','true');
+  alert('Sesión cerrada');
+});
+
+/* =====================
+   CARGA de órdenes desde Google Apps Script
+   - hace fallback si el servidor devuelve formatos distintos
+   ===================== */
+async function getOrders(){
+  try {
+    const res = await fetch(GAS_URL);
+    // Si falla el parse, caer al catch
+    const data = await res.json();
+    // fallback: si te llega {orders: [...] } u { success:true, orders: [...]}
+    if(Array.isArray(data)) return data;
+    if(data && Array.isArray(data.orders)) return data.orders;
+    if(data && data.success && Array.isArray(data.orders)) return data.orders;
+    // si viene otra estructura, intentar devolver array vacío
+    return [];
+  } catch(err){
+    console.error("Error getOrders:", err);
+    return [];
+  }
+}
+
+/* =====================
+   populateOrdersTable: muestra tabla con miniaturas + fallback parsing
+   ===================== */
+async function populateOrdersTable(){
+  const orders = await getOrders();
+  ordersTbody.innerHTML = '';
+
+  // Si no hay pedidos, mantener vacío
+  if(!orders || orders.length === 0) {
+    return;
+  }
+
+  orders.forEach((o, idx)=>{
+    const tr = document.createElement('tr');
+
+    // Asegurar que o.productos sea un array de objetos con {texto,img,qty,subtotal}
+    let productosArr = [];
+    if(Array.isArray(o.productos)){
+      // si proviene de Apps Script ya parseado
+      productosArr = o.productos.map(p=>{
+        // p puede venir con keys diferentes; intentemos normalizar
+        return {
+          texto: p.texto || p.name || String(p),
+          img: p.img || p.imagen || p.image || '',
+          qty: Number(p.qty || p.cantidad || (p.qty===0?0: (p.cantidad?Number(p.cantidad):0))) || 0,
+          subtotal: Number(p.subtotal || p.precio || 0) || 0
+        };
+      });
+    } else {
+      // fallback: si viene como string (celda con saltos de línea)
+      productosArr = parseProductosClient(o.productos);
+    }
+
+    // Construimos productos con imagen miniatura (HTML seguro por escape)
+    const productsHtml = productosArr.map(p => `
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        ${p.img ? `<img src="${escapeAttr(p.img)}" style="width:40px;height:40px;object-fit:cover;border-radius:6px" />` : ''}
+        <div style="line-height:1.05">
+          <div style="font-weight:600">${escapeHtml(p.name || p.texto || '')}</div>
+          <div style="color:#666;font-size:12px">${escapeHtml((p.qty?('x'+p.qty+' • '):'') + (p.subtotal? formatPrice(p.subtotal) : ''))}</div>
+        </div>
+      </div>
+    `).join('');
+
+    // Unificar dirección: algunos pedidos tienen departamento/ciudad/direccion separados
+    const direccion = ((o.departamento || '') + (o.ciudad ? ' / ' + o.ciudad : '') + (o.direccion ? ' - ' + o.direccion : '')).trim() || (o.direccion || '-');
+
+    tr.innerHTML = `
+      <td style="vertical-align:middle">${idx+1}</td>
+      <td style="vertical-align:middle">${escapeHtml(o.cliente || '-')}</td>
+      <td style="vertical-align:middle">${escapeHtml(o.telefono || '-')}</td>
+      <td style="vertical-align:middle">${escapeHtml(direccion)}</td>
+      <td>${productsHtml}</td>
+      <td style="vertical-align:middle">${formatPrice(Number(o.total || 0))}</td>
+      <td style="vertical-align:middle">${escapeHtml(o.fecha || '')}</td>
+    `;
+    ordersTbody.appendChild(tr);
+  });
+}
+
+// escape helpers
+function escapeHtml(unsafe){
+  if(unsafe === null || unsafe === undefined) return '';
+  return String(unsafe).replace(/[&<>"'`=/]/g, function(s) {
+    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;','/':'&#47;','=':'&#61;'})[s];
+  });
+}
+function escapeAttr(v){ return String(v || '').replace(/"/g,'&quot;'); }
+
+/* =====================
+   KPIs: calcular sobre la data real (usa parseProductosClient si hace falta)
+   ===================== */
+async function refreshKPIs(){
+  const orders = await getOrders();
+  const totalOrders = orders.length;
+  const totalRevenue = orders.reduce((s,o)=> s + (Number(o.total) || 0), 0);
+
+  // calcular items: usar cantidad si existe, o parsear el texto
+  const totalItems = orders.reduce((s,o)=>{
+    let productosArr = [];
+    if(Array.isArray(o.productos)){
+      productosArr = o.productos;
+      // si los objetos de server no tienen qty, intentar leer p.cantidad o p.qty
+      const qty = productosArr.reduce((a,p)=>{
+        return a + (Number(p.qty || p.cantidad || 0) || 0);
+      },0);
+      return s + qty;
+    } else {
+      // fallback string
+      productosArr = parseProductosClient(o.productos);
+      const qty = productosArr.reduce((a,p)=> a + (Number(p.qty) || 0), 0);
+      return s + qty;
+    }
+  }, 0);
+
+  const lastDate = orders.length ? orders[0].fecha : '-';
+  kpiOrders.textContent = totalOrders;
+  kpiRevenue.textContent = formatPrice(totalRevenue);
+  kpiItems.textContent = totalItems;
+  kpiLast.textContent = lastDate;
+}
+
+/* =====================
+   Admin buttons: hacer async/await donde hace falta
+   ===================== */
+adminRefreshBtn.addEventListener('click', async ()=>{
+  if(!isAdminAuthenticated()){ alert('Inicia sesión primero'); return; }
+  await populateOrdersTable();
+  await refreshKPIs();
+  alert('Datos actualizados');
+});
+
+adminExportBtn.addEventListener('click', async ()=>{
+  if(!isAdminAuthenticated()){ alert('Inicia sesión primero'); return; }
+  const orders = await getOrders();
+  const blob = new Blob([JSON.stringify(orders, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'orders_export.json';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+
+adminClearOrdersBtn.addEventListener('click', async ()=>{
+  if(!isAdminAuthenticated()){ alert('Inicia sesión primero'); return; }
+  if(!confirm('¿Borrar todas las órdenes? Esta acción no se puede deshacer.')) return;
+  localStorage.removeItem('orders_v1');
+  await populateOrdersTable();
+  await refreshKPIs();
+  alert('Órdenes eliminadas (local).');
+});
+
+/* =====================
+   Al abrir el panel (si ya hay sesión), mostrar KPIs automáticamente
+   ===================== */
+(function initAdminState(){
+  if(isAdminAuthenticated()){
+    adminLoginCard.style.display = 'none';
+    adminKPIsCard.style.display = 'block';
+    document.querySelectorAll('.admin-protected').forEach(el => el.classList.add('show'));
+    populateOrdersTable();
+    refreshKPIs();
+    const user = sessionStorage.getItem('admin_user') || 'admin';
+    document.getElementById('adminStatus').textContent = 'Conectado: ' + user;
+  } else {
+    document.querySelectorAll('.admin-protected').forEach(el => el.classList.remove('show'));
+    adminLoginCard.style.display = 'block';
+    adminKPIsCard.style.display = 'none';
+  }
+})();
+
+/* =====================
+   Small improvement: update UI every X seconds (optional)
+   ===================== */
+setInterval(()=> {
+  updateCartUI();
+  if(isAdminAuthenticated()) {
+    populateOrdersTable();
+    refreshKPIs();
+  }
+}, 5000);
+
+</script>
+
+</body>
+</html>
